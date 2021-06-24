@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"alberk.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="获取打电话的广播1.在清单文件中配置receiver，指定要接收广播的类型，并添加相应的权限。 12345&lt;receiver android:name &#x3D; &quot;包名+类名&quot;&gt;	&lt;intent-filter&gt;		&lt;action android:name &#x3D; &quot;android.intent.action.NEW_OUTGOING_CALL&amp;qu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 系列笔记 七 - 广播">
+<meta property="og:url" content="http://alberk.github.io/2016/05/18/android-note-day07/index.html">
+<meta property="og:site_name" content="Alberk&#39;s Blog">
+<meta property="og:description" content="获取打电话的广播1.在清单文件中配置receiver，指定要接收广播的类型，并添加相应的权限。 12345&lt;receiver android:name &#x3D; &quot;包名+类名&quot;&gt;	&lt;intent-filter&gt;		&lt;action android:name &#x3D; &quot;android.intent.action.NEW_OUTGOING_CALL&amp;qu">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-05-18T14:55:08.000Z">
+<meta property="article:modified_time" content="2021-06-24T07:07:59.078Z">
+<meta property="article:author" content="Alberk">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://alberk.github.io/2016/05/18/android-note-day07/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android 系列笔记 七 - 广播 | Alberk's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Alberk's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">
+          <i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+	
+  </ul>
+
+<!--
+<div class="site-search">
+      <div id="search-form">
+		<input type="text" id="st-search-input" class="st-search-input st-default-search-input">
+		<div id="search-result" class="popup-trigger search-result"></div>
+	  </div>
+    </div>
+
+<div class="site-search">
+	<form class="site-search-form">
+		<span class="search-icon fa fa-search"></span> 
+		<input type="text" id="search-input">
+		<div id="search-result" style="display: none;">
+			<ul class="search-result-list">
+				<li><a href="#" class="popup-trigger search-result">本地搜索</a></li>
+			</ul>
+		</div>
+	</form>
+</div>
+-->
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://alberk.github.io/2016/05/18/android-note-day07/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/default_avatar.jpg">
+      <meta itemprop="name" content="Alberk">
+      <meta itemprop="description" content="Be simple, not be silly.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alberk's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android 系列笔记 七 - 广播
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-05-18 14:55:08" itemprop="dateCreated datePublished" datetime="2016-05-18T14:55:08+00:00">2016-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-24 07:07:59" itemprop="dateModified" datetime="2021-06-24T07:07:59+00:00">2021-06-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index"><span itemprop="name">android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/notes/" itemprop="url" rel="index"><span itemprop="name">notes</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="获取打电话的广播"><a href="#获取打电话的广播" class="headerlink" title="获取打电话的广播"></a>获取打电话的广播</h3><p>1.在清单文件中配置receiver，指定要接收广播的类型，并添加相应的权限。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.intent.action.NEW_OUTGOING_CALL&quot;</span>/&gt;</span>//外拨电话</span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>2.创建一个类继承自BrocastReceiver 并重写onReceive()方法，该方法在接收到广播的时候调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在打电话广播中，会携带拨打电话的号码</span></span><br><span class="line">String phoneNumber = getResultData();<span class="comment">//获取数据</span></span><br><span class="line"><span class="comment">//把新的号码放到广播中</span></span><br><span class="line">setResultData(phoneNumber);</span><br></pre></td></tr></table></figure>
+<p>即便广播接收者所在进程已经被关闭，当系统发送出的action跟该广播的action是匹配的，系统会启动该广播接收者所在的进程，并把广播发送给该广播接收者</p>
+<h3 id="监听短信"><a href="#监听短信" class="headerlink" title="监听短信"></a>监听短信</h3><p>1.在清单文件中配置广播，并添加相应权限</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.provider.Telephony.SMS_RECEIVED&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>2.创建一个类继承自BrocastReceiver 并重写onReceive()方法，该方法在接收到广播的时候调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Object[] objs=intent.getExtras().get(<span class="string">&quot;pdus&quot;</span>);<span class="comment">//获得一组短信</span></span><br><span class="line"><span class="keyword">for</span>(Object obj:objs)&#123;</span><br><span class="line">	<span class="comment">//得到短信对象</span></span><br><span class="line">	SmsMessage smsMessage=SmsMessage.createFromPdu((<span class="keyword">byte</span>[])obj);</span><br><span class="line">	String body=smsMessage.getMessageBody();</span><br><span class="line">	String sender=smsMessage.getOriginatingAddress();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>4.0之后，广播接收者所在进程如果从来没启动过，那么广播接收者不会生效<br>4.0之后，如果系统自动关闭广播接收者所在进程，在广播中的action跟该广播接收者的action匹配时，系统会启动该广播接收者所在的进程，但是如果是用户手动关闭该进程，那么该进程会进入冻结状态，再也不会启动，直到下一次用户手动启动该进程。</p>
+</blockquote>
+<h3 id="监控SD卡状态"><a href="#监控SD卡状态" class="headerlink" title="监控SD卡状态"></a>监控SD卡状态</h3><p>1.在清单文件中配置广播，并添加相应权限</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.intent.action.MEDIA_MOUNTED&quot;</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.intent.action.MEDIA_REMOVED&quot;</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.intent.action.MEDIA_UNMOUNTED&quot;</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span> = <span class="string">&quot;file&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>2.onReceive()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//判断收到的是什么广播</span></span><br><span class="line">String action = intent.getAction();</span><br><span class="line"><span class="keyword">if</span>(action.equals(<span class="string">&quot;android.intent.action.MEDIA_MOUNTED&quot;</span>))&#123;</span><br><span class="line">	Toast.makeText(context,  <span class="string">&quot;SD卡可用&quot;</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="开机启动应用"><a href="#开机启动应用" class="headerlink" title="开机启动应用"></a>开机启动应用</h3><p>1.在清单文件中配置广播，并添加相应权限</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.intent.action.BOOT_COMPLETED&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>2.onReceive()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Intent it = <span class="keyword">new</span> Intent(context, MainActivity.class);</span><br><span class="line"><span class="comment">//创建任务栈，存放启动的activity</span></span><br><span class="line">it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">context.startActivity(it);</span><br></pre></td></tr></table></figure>
+
+<h3 id="监控应用状态-安装、更新、卸载"><a href="#监控应用状态-安装、更新、卸载" class="headerlink" title="监控应用状态: 安装、更新、卸载"></a>监控应用状态: 安装、更新、卸载</h3><p>1.在清单文件中配置广播，并添加相应权限</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.intent.action.PACKAGE_ADDED&quot;</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.intent.action.PACKAGE_REPLACED&quot;</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;android.intent.action.PACKAGE_REMOVED&quot;</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span> = <span class="string">&quot;package&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>2.onReceive()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//判断收到的是什么广播</span></span><br><span class="line">String action = intent.getAction();</span><br><span class="line"><span class="keyword">if</span>(action.equals(<span class="string">&quot;android.intent.action.PACKAGE_ADDED&quot;</span>))&#123;</span><br><span class="line">	Uri uri = intent.getData();</span><br><span class="line">	Toast.makeText(context,  uri.toString() + <span class="string">&quot; 应用安装了&quot;</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义广播"><a href="#自定义广播" class="headerlink" title="自定义广播"></a>自定义广播</h3><h4 id="发送自定义广播"><a href="#发送自定义广播" class="headerlink" title="发送自定义广播"></a>发送自定义广播</h4><p>一般都是隐式意图</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line"><span class="comment">//自定义</span></span><br><span class="line">intent.setAction(<span class="string">&quot;包名.动作&quot;</span>);</span><br><span class="line">intent.putExtras(<span class="string">&quot;&quot;</span>,<span class="string">&quot;&quot;</span>);</span><br><span class="line">sendBroadcast(intent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="接收自定义广播"><a href="#接收自定义广播" class="headerlink" title="接收自定义广播"></a>接收自定义广播</h4><p>清单文件中配置广播接收者</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;包名.动作&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="发送无序广播"><a href="#发送无序广播" class="headerlink" title="发送无序广播"></a>发送无序广播</h3><p>没有顺序的广播，所有与广播中的action匹配的广播接收者都可以收到这条广播，并且是没有先后的顺序，视为同时收到<br><code>sendBroadcast(intent);//无序广播</code></p>
+<h3 id="发送有序广播"><a href="#发送有序广播" class="headerlink" title="发送有序广播"></a>发送有序广播</h3><p>有顺序的广播，所有与广播中的action匹配的广播接收者都可以收到这条广播，但是是有先后的顺序，按照广播接收者的优先级排序<br><code>有序广播可以被拦截，可被终止，可以被修改数据</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setAction(<span class="string">&quot;it.java.fdm&quot;</span>);</span><br><span class="line">sendOrderedBroadcast(intent,</span><br><span class="line">	<span class="keyword">null</span>,<span class="comment">//第二个参数为接收广播需要的权限</span></span><br><span class="line">	<span class="keyword">null</span>,<span class="comment">//最终的广播接收者，只接收该条广播并且一定可以收到，不需要在清单文件中配置</span></span><br><span class="line">	<span class="keyword">null</span>,</span><br><span class="line">	<span class="number">0</span>,</span><br><span class="line">	<span class="string">&quot;每人发100斤大米&quot;</span>,</span><br><span class="line">	<span class="keyword">null</span>);<span class="comment">//Bundle对象，携带数据</span></span><br><span class="line">sendBroadcast(intent);</span><br></pre></td></tr></table></figure>
+<h3 id="有序广播接收者"><a href="#有序广播接收者" class="headerlink" title="有序广播接收者"></a>有序广播接收者</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">android:priority</span> = <span class="string">&quot;1000&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;it.java.fdm&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">android:priority</span> = <span class="string">&quot;800&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;it.java.fdm&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span> = <span class="string">&quot;包名+类名&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">android:priority</span> = <span class="string">&quot;600&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span> = <span class="string">&quot;it.java.fdm&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>onReceive()中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String data = getResultData();<span class="comment">//&quot;每人发100斤大米&quot;</span></span><br><span class="line">setResultData(<span class="string">&quot;每人发120斤大米&quot;</span>);<span class="comment">//修改数据</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/android/" rel="tag"># android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/05/17/android-note-day06/" rel="prev" title="Android 系列笔记 六">
+      <i class="fa fa-chevron-left"></i> Android 系列笔记 六
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/05/19/android-note-day08/" rel="next" title="Android 系列笔记 八 - 服务">
+      Android 系列笔记 八 - 服务 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%89%93%E7%94%B5%E8%AF%9D%E7%9A%84%E5%B9%BF%E6%92%AD"><span class="nav-number">1.</span> <span class="nav-text">获取打电话的广播</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E5%90%AC%E7%9F%AD%E4%BF%A1"><span class="nav-number">2.</span> <span class="nav-text">监听短信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7SD%E5%8D%A1%E7%8A%B6%E6%80%81"><span class="nav-number">3.</span> <span class="nav-text">监控SD卡状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E5%BA%94%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">开机启动应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E5%BA%94%E7%94%A8%E7%8A%B6%E6%80%81-%E5%AE%89%E8%A3%85%E3%80%81%E6%9B%B4%E6%96%B0%E3%80%81%E5%8D%B8%E8%BD%BD"><span class="nav-number">5.</span> <span class="nav-text">监控应用状态: 安装、更新、卸载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B9%BF%E6%92%AD"><span class="nav-number">6.</span> <span class="nav-text">自定义广播</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B9%BF%E6%92%AD"><span class="nav-number">6.1.</span> <span class="nav-text">发送自定义广播</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A5%E6%94%B6%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B9%BF%E6%92%AD"><span class="nav-number">6.2.</span> <span class="nav-text">接收自定义广播</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E6%97%A0%E5%BA%8F%E5%B9%BF%E6%92%AD"><span class="nav-number">7.</span> <span class="nav-text">发送无序广播</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E6%9C%89%E5%BA%8F%E5%B9%BF%E6%92%AD"><span class="nav-number">8.</span> <span class="nav-text">发送有序广播</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E5%BA%8F%E5%B9%BF%E6%92%AD%E6%8E%A5%E6%94%B6%E8%80%85"><span class="nav-number">9.</span> <span class="nav-text">有序广播接收者</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alberk"
+      src="/images/default_avatar.jpg">
+  <p class="site-author-name" itemprop="name">Alberk</p>
+  <div class="site-description" itemprop="description">Be simple, not be silly.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alberk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;alberk" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/jockio_" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;jockio_" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://weibo.com/jockio" title="Weibo → http:&#x2F;&#x2F;weibo.com&#x2F;jockio" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alberk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+
+<!-- 页面点击小红心 -->
+
+      <script type="text/javascript" src="/js/clicklove.js"></script>
+
+
+</html>
